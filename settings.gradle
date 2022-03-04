@@ -1,7 +1,6 @@
 plugins {
     id("com.gradle.enterprise").version("3.7.2")
 }
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 gradleEnterprise {
     buildScan {
