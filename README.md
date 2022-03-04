@@ -11,8 +11,11 @@ input properties affected are:
 Simple project with Gradle 7.4 and Kotlin Gradle Plugin 1.6.10.
 
 ### Steps to Reproduce
+
 1- Clone repository
+
 2- Execute:  `./gradlew :lib:compileKotlin -Dorg.gradle.caching.debug=true`
+
 3- Trigger Github Actions linked to this repo to execute the build in different environments
 
 ### Expected output
