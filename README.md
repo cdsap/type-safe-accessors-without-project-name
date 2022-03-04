@@ -1,9 +1,10 @@
 ### Version Catalogs without rootProject.name
 This repository reproduces the caching issue observed when we enable 
-`enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` in a project without `rootProject.name` set.
+`enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` in a project without `rootProject.name` defined in 
+settings.gradle.
 
-The component showing the cache issues was the Kotlin Gradle Plugin, the task was KotlinCompiler, and the 
-input properties affected are:
+In this example, the component affected is the Kotlin Gradle Plugin, the task KotlinCompiler, and the 
+input properties with cache differences are:
 * classpathSnapshotProperties
 * kotlinJavaToolchainProvider
 
@@ -18,14 +19,35 @@ Simple project with Gradle 7.4 and Kotlin Gradle Plugin 1.6.10.
 
 3- Trigger Github Actions linked to this repo to execute the build in different environments
 
-### Expected output
-
 
 ### Current output
 
+|                             | Local                              | CI-Linux                                 | CI-Mac                             |
+|-----------------------------|------------------------------------|------------------------------------------|------------------------------------|
+| :lib:compileKotlin          | 8f55d208846f869e716079f8ce6d64db   | fa441df03e72302a4ad57f3d72afaa4c         | fa441df03e72302a4ad57f3d72afaa4c   |
+| classpathSnapshotProperties | 794ee8836a93f7b521a667b6a231372e   | e5facd282957420c8bc21a116db6b1a5         | e5facd282957420c8bc21a116db6b1a5   |
+| kotlinJavaToolchainProvider | 665d11ffe53493d810603c72f424ef67   | d92d280e3d121894ad311f582f7d688b         | d92d280e3d121894ad311f582f7d688b   |
+| classpath                   | fa7bf5060d9977722cf303b812013991   | fa7bf5060d9977722cf303b812013991         | fa7bf5060d9977722cf303b812013991   |
+| Build scan                  | https://gradle.com/s/qs634loojs3hy | https://scans.gradle.com/s/k32lsjeh4g34g | https://gradle.com/s/vi4yuyzgssgno |
 
+### Expected output
+
+|                             | Local                              | CI-Linux                                 | CI-Mac                             |
+|-----------------------------|------------------------------------|------------------------------------------|------------------------------------|
+| :lib:compileKotlin          | fa441df03e72302a4ad57f3d72afaa4c   | fa441df03e72302a4ad57f3d72afaa4c         | fa441df03e72302a4ad57f3d72afaa4c   |
+| classpathSnapshotProperties | e5facd282957420c8bc21a116db6b1a5   | e5facd282957420c8bc21a116db6b1a5         | e5facd282957420c8bc21a116db6b1a5   |
+| kotlinJavaToolchainProvider | d92d280e3d121894ad311f582f7d688b   | d92d280e3d121894ad311f582f7d688b         | d92d280e3d121894ad311f582f7d688b   |
+| classpath                   | fa7bf5060d9977722cf303b812013991   | fa7bf5060d9977722cf303b812013991         | fa7bf5060d9977722cf303b812013991   |
 
 ### Previous Behavior
-Branch `no-feature` contains the same configuration(Gradle 7.4 and
-KGP 1.6.10) without `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")` 
-in settings.gradle
+Branch `no-feature` contains the same configuration(no project name, Gradle 7.4 and
+KGP 1.6.10) without `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")`
+in settings.gradle. Executing the build in local/ci-mac/ci-linux returns the same cache key:
+`6653987ca103a8f54e559b150035fb54`for `:lib:compileKotlin`.
+
+### Fix 
+Include `rootProject.name`
+
+### Additional notes
+Between test different scenarios I had to clean manually the `.gradle` folder to regenerate the 
+generated code for TYPESAFE_PROJECT_ACCESSORS 
