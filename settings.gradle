@@ -1,0 +1,13 @@
+plugins {
+    id("com.gradle.enterprise").version("3.7.2")
+}
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+gradleEnterprise {
+    buildScan {
+        publishAlways()
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+    }
+}
+include ':lib'
